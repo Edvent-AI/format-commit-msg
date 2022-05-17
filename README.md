@@ -1,0 +1,1 @@
+# format-commit-msg
