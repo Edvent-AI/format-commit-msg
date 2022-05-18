@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #!/usr/bin/env bash
 #
 # Automatically adds branch name and branch description to every commit message.
