@@ -36,8 +36,8 @@ BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" $1)
 
 # check the branch name is valid or not
 if [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]] || [[ $BRANCH_EXCLUDED -eq 1 ]] ; then
-  if [ -n "$BRANCH_NAME" ] && ! [[ $BRANCH_EXCLUDED -eq 1 ]] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then 
-    sed -i .bak -e "1s:^:[$TICKET_ID] :" $1
+  if [ -n "$BRANCH_NAME" ] && ! [[ $BRANCH_EXCLUDED -eq 1 ]] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
+    sed -i -e "1s:^:[$TICKET_ID] :" $1
   fi
 else
   echo -e "${RED}Please correct the branch name"
