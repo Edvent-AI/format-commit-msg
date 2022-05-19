@@ -18,7 +18,7 @@ if [ -z "$BRANCHES_TO_SKIP" ]; then
 fi
 
 # Get branch name
-BRANCH_NAME=$(git branch | grep '*' | sed 's/* //')
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
 # Select ticket id from branch name and capitalize it
 TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\)-.*:\1:' -e \
