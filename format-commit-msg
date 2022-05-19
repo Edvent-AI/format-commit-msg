@@ -1,9 +1,11 @@
-#!/bin/sh; C:/Program Files/Git/bin/sh.exe
+#!'C:/Program Files/Git/bin/sh.exe'
+#!/bin/sh
 #!/usr/bin/env bash
 #
 # Automatically adds branch name and branch description to every commit message.
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
+# echo "Hello"
 RED="\033[1;31m"
 GREEN="\033[1;32m"
 ORANGE="\033[0;33m"
