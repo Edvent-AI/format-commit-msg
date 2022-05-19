@@ -1,7 +1,7 @@
 -   id: format-commit-msg
     name: Format Commit Message
     description: This hook format commit message.
-    entry: format-commit-msg
+    entry: format-commit-msg.sh
     language: script
     always_run: true
     stages: [prepare-commit-msg]
