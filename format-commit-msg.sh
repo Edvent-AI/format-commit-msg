@@ -4,7 +4,7 @@
 # Automatically adds branch name and branch description to every commit message.
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
-echo "Hello"
+
 RED="\033[1;31m"
 GREEN="\033[1;32m"
 ORANGE="\033[0;33m"
@@ -21,11 +21,11 @@ fi
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
 # Select ticket id from branch name and capitalize it
-TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\)-.*:\1:' -e \
+TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
     'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
 
 # Regex to check the valid branch name
-VALID_BRANCH_REGEX="^([a-zA-Z]+\-[0-9]+-.*)$"
+VALID_BRANCH_REGEX="^([a-zA-Z]+\-[0-9]+.*)$"
 
 # Whether branch name should be excluded from the prepend
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
