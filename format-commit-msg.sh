@@ -6,11 +6,6 @@
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
 
-RED="\033[1;31m"
-GREEN="\033[1;32m"
-ORANGE="\033[0;33m"
-NOCOLOR="\033[0m"
-
 # This way you can customize which branches should be skipped when
 # prepending commit message.
 if [ -z "$BRANCHES_TO_SKIP" ]; then
@@ -43,9 +38,22 @@ COMMIT_MSG=$(head -n 1 $1)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
   # For excluded branches, enforce that a branch name is prepended in square brackets
   if ! [[ "$COMMIT_MSG" =~ $BRANCH_PREFIX_REGEX ]]; then
-    echo -e "${RED}Error: Commits to '$BRANCH_NAME' must have a branch name or Jira ticket ID prepended in square brackets"
-    echo -e "${NOCOLOR}Expected format: ${GREEN}[AB3-123] Your commit message${NOCOLOR}"
-    echo -e "${NOCOLOR}Current message: ${ORANGE}${COMMIT_MSG}${NOCOLOR}\n"
+    echo ""
+    echo "========================================"
+    echo "ERROR: Missing Branch Prefix"
+    echo "========================================"
+    echo ""
+    echo "Commits to '$BRANCH_NAME' must have a branch name"
+    echo "prepended in square brackets."
+    echo ""
+    echo "Expected format:"
+    echo "  [ABC-123] Your commit message"
+    echo ""
+    echo "Your message:"
+    echo "  $COMMIT_MSG"
+    echo ""
+    echo "Please update your commit message and try again."
+    echo ""
     exit 1
   fi
 elif [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]]; then
@@ -55,7 +63,14 @@ elif [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]]; then
   fi
 else
   # Invalid branch name
-  echo -e "${RED}Please correct the branch name"
-  echo -e "${NOCOLOR}Current BRANCH_NAME: ${ORANGE}${BRANCH_NAME}\n${NOCOLOR}"
+  echo ""
+  echo "========================================"
+  echo "ERROR: Invalid Branch Name"
+  echo "========================================"
+  echo ""
+  echo "Current branch name: $BRANCH_NAME"
+  echo ""
+  echo "Branch names must follow the format: ABC-123-description"
+  echo ""
   exit 1
 fi
