@@ -23,7 +23,7 @@ TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
 VALID_BRANCH_REGEX="^([a-zA-Z0-9]+\-[0-9]+.*)$"
 
 # Regex to check if commit message starts with [BRANCH-NAME] format (allows numbers in first part)
-BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[0-9]+\]"
+BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
 
 # Whether branch name should be excluded from the prepend
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
