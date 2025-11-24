@@ -6,6 +6,21 @@
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
 
+# ===== SKIP MERGE COMMITS =====
+# Check if this is a merge commit and skip processing if it is
+if [ -f .git/MERGE_HEAD ]; then
+  exit 0
+fi
+
+# Also check if commit message starts with "Merge" (for manual merge messages)
+if [ -f "$1" ]; then
+  FIRST_LINE=$(head -n 1 "$1")
+  if [[ "$FIRST_LINE" =~ ^Merge ]]; then
+    exit 0
+  fi
+fi
+# ===== END MERGE COMMIT CHECK =====
+
 # This way you can customize which branches should be skipped when
 # prepending commit message.
 if [ -z "$BRANCHES_TO_SKIP" ]; then
@@ -33,11 +48,6 @@ BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" $1)
 
 # Get the first line of the commit message
 COMMIT_MSG=$(head -n 1 $1)
-
-# Skip validation for merge commits
-if grep -q "^Merge branch" "$COMMIT_MSG" || grep -q "^Merge remote-tracking branch" "$COMMIT_MSG"; then
-    exit 0
-fi
 
 # Check if branch is excluded (like main)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
