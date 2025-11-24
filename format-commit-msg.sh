@@ -7,15 +7,10 @@
 #
 
 # ===== SKIP MERGE COMMITS =====
-# Check if this is a merge commit and skip processing if it is
-if [ -f .git/MERGE_HEAD ]; then
-  exit 0
-fi
-
-# Also check if commit message starts with "Merge" (for manual merge messages)
+# Check if commit message starts with "Merge" (merge commits)
 if [ -f "$1" ]; then
   FIRST_LINE=$(head -n 1 "$1")
-  if [[ "$FIRST_LINE" =~ ^Merge ]]; then
+  if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
     exit 0
   fi
 fi
