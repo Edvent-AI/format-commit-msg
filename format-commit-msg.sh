@@ -82,7 +82,11 @@ if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
 elif [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]]; then
   # Valid feature branch - auto-prepend if needed
   if [ -n "$BRANCH_NAME" ] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
-    sed -i -e "1s:^:[$TICKET_ID] :" "$1"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' -e "1s:^:[$TICKET_ID] :" "$1"
+    else
+      sed -i -e "1s:^:[$TICKET_ID] :" "$1"
+    fi
   fi
 else
   # Invalid branch name
