@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#!'C:/Program Files/Git/bin/sh.exe'
 #
 # Automatically adds branch name and branch description to every commit message.
 # For excluded branches (like main), enforces that a branch name is prepended.
