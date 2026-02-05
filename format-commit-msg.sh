@@ -6,9 +6,15 @@ set -euo pipefail
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
 
+# Validate commit message file argument
+if [[ -z "${1:-}" ]] || [[ ! -f "$1" ]]; then
+  echo "Error: Invalid or missing commit message file" >&2
+  exit 1
+fi
+
 # ===== SKIP MERGE COMMITS =====
 # Check if commit message starts with "Merge" (merge commits)
-if [ -f "$1" ]; then
+if [[ -f "$1" ]]; then
   FIRST_LINE=$(head -n 1 "$1")
   if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
     exit 0
