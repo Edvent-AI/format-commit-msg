@@ -53,7 +53,7 @@ VALID_BRANCH_REGEX="^([a-zA-Z0-9]+\-[0-9]+.*)$"
 BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
 
 # Whether branch name should be excluded from the prepend
-BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
+BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$" || true)
 
 # Whether the commit message has a TICKET_ID
 BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" "$1")
