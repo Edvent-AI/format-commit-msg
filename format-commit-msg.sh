@@ -18,8 +18,8 @@ fi
 
 # ===== SKIP MERGE COMMITS =====
 # Check if commit message starts with "Merge" (merge commits)
-FIRST_LINE=$(head -n 1 "$1")
-if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
+COMMIT_MSG=$(head -n 1 "$1")
+if [[ "$COMMIT_MSG" =~ ^Merge[[:space:]] ]]; then
   exit 0
 fi
 # ===== END MERGE COMMIT CHECK =====
@@ -61,9 +61,6 @@ if grep -q "$TICKET_ID" "$1"; then
 else
   HAS_TICKET_ID_IN_COMMIT_MSG=0
 fi
-
-# Get the first line of the commit message
-COMMIT_MSG=$(head -n 1 "$1")
 
 # Check if branch is excluded (like main)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
