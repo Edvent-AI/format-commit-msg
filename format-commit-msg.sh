@@ -5,8 +5,8 @@ set -euo pipefail
 #   0 - Success (commit proceeds)
 #   1 - Error (commit blocked)
 #
-# Automatically adds branch name and branch description to every commit message.
-# For excluded branches (like main), enforces that a branch name is prepended.
+# Automatically prepends ticket ID (e.g., [CJ1-207]) to commit messages.
+# For excluded branches (like main), enforces that a ticket ID is already present.
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
 
@@ -18,11 +18,9 @@ fi
 
 # ===== SKIP MERGE COMMITS =====
 # Check if commit message starts with "Merge" (merge commits)
-if [[ -f "$1" ]]; then
-  FIRST_LINE=$(head -n 1 "$1")
-  if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
-    exit 0
-  fi
+COMMIT_MSG=$(head -n 1 "$1")
+if [[ "$COMMIT_MSG" =~ ^Merge[[:space:]] ]]; then
+  exit 0
 fi
 # ===== END MERGE COMMIT CHECK =====
 
@@ -46,32 +44,35 @@ fi
 TICKET_ID=$(echo "$BRANCH_NAME" | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
     'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
 
-# Regex to check the valid branch name (allows numbers in first part)
-VALID_BRANCH_REGEX="^([a-zA-Z0-9]+\-[0-9]+.*)$"
+# Pattern: starts with alphanumeric, hyphen, then digits
+# Examples: abc-123, cj1-207-fix-bug, FEAT-99-new-feature
+VALID_BRANCH_REGEX="^[a-zA-Z0-9]+-[0-9]+.*$"
 
-# Regex to check if commit message starts with [BRANCH-NAME] format (allows numbers in first part)
-BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
+# Pattern: [ALPHANUMERIC-ALPHANUMERIC] at start of message
+# Examples: [ABC-123], [CJ1-207], [FEAT-99]
+TICKET_ID_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
 
 # Whether branch name should be excluded from the prepend
-BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
+BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$" || true)
 
-# Whether the commit message has a TICKET_ID
-BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" "$1")
-
-# Get the first line of the commit message
-COMMIT_MSG=$(head -n 1 "$1")
+# Check if TICKET_ID is already in commit message
+if grep -q "$TICKET_ID" "$1"; then
+  HAS_TICKET_ID_IN_COMMIT_MSG=1
+else
+  HAS_TICKET_ID_IN_COMMIT_MSG=0
+fi
 
 # Check if branch is excluded (like main)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
-  # For excluded branches, enforce that a branch name is prepended in square brackets
-  if ! [[ "$COMMIT_MSG" =~ $BRANCH_PREFIX_REGEX ]]; then
+  # For excluded branches, enforce that a ticket ID is present in square brackets
+  if ! [[ "$COMMIT_MSG" =~ $TICKET_ID_PREFIX_REGEX ]]; then
     echo ""
     echo "========================================"
-    echo "ERROR: Missing Branch Prefix"
+    echo "ERROR: Missing Ticket ID"
     echo "========================================"
     echo ""
-    echo "Commits to '$BRANCH_NAME' must have a branch name"
-    echo "prepended in square brackets."
+    echo "Commits to '$BRANCH_NAME' must include a ticket ID"
+    echo "in square brackets at the start."
     echo ""
     echo "Expected format:"
     echo "  [ABC-123] Your commit message"
@@ -85,7 +86,7 @@ if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
   fi
 elif [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]]; then
   # Valid feature branch - auto-prepend if needed
-  if ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
+  if [[ $HAS_TICKET_ID_IN_COMMIT_MSG -eq 0 ]]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i '' -e "1s:^:[$TICKET_ID] :" "$1"
     else
