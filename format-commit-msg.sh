@@ -24,7 +24,7 @@ fi
 
 # This way you can customize which branches should be skipped when
 # prepending commit message.
-if [ -z "$BRANCHES_TO_SKIP" ]; then
+if [[ -z "${BRANCHES_TO_SKIP:-}" ]]; then
   BRANCHES_TO_SKIP=(master production staging main bangkok-pc)
 fi
 
@@ -33,7 +33,7 @@ BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
 # ===== SKIP DETACHED HEAD =====
 # Skip if in detached HEAD state (rebase, bisect, cherry-pick, etc.)
-if [ "$BRANCH_NAME" = "HEAD" ]; then
+if [[ "$BRANCH_NAME" == "HEAD" ]]; then
   exit 0
 fi
 # ===== END DETACHED HEAD CHECK =====
