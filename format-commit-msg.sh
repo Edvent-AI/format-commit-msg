@@ -18,11 +18,9 @@ fi
 
 # ===== SKIP MERGE COMMITS =====
 # Check if commit message starts with "Merge" (merge commits)
-if [[ -f "$1" ]]; then
-  FIRST_LINE=$(head -n 1 "$1")
-  if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
-    exit 0
-  fi
+FIRST_LINE=$(head -n 1 "$1")
+if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
+  exit 0
 fi
 # ===== END MERGE COMMIT CHECK =====
 
