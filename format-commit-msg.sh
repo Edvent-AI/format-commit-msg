@@ -25,6 +25,13 @@ fi
 # Get branch name
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
+# ===== SKIP DETACHED HEAD =====
+# Skip if in detached HEAD state (rebase, bisect, cherry-pick, etc.)
+if [ "$BRANCH_NAME" = "HEAD" ]; then
+  exit 0
+fi
+# ===== END DETACHED HEAD CHECK =====
+
 # Select ticket id from branch name and capitalize it
 TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
     'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
