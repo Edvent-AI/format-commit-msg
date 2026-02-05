@@ -39,7 +39,7 @@ fi
 # ===== END DETACHED HEAD CHECK =====
 
 # Select ticket id from branch name and capitalize it
-TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
+TICKET_ID=$(echo "$BRANCH_NAME" | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
     'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
 
 # Regex to check the valid branch name (allows numbers in first part)
