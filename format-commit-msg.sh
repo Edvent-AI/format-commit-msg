@@ -50,7 +50,7 @@ TICKET_ID=$(echo "$BRANCH_NAME" | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
 VALID_BRANCH_REGEX="^([a-zA-Z0-9]+\-[0-9]+.*)$"
 
 # Regex to check if commit message starts with [BRANCH-NAME] format (allows numbers in first part)
-BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
+TICKET_ID_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
 
 # Whether branch name should be excluded from the prepend
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$" || true)
@@ -68,7 +68,7 @@ COMMIT_MSG=$(head -n 1 "$1")
 # Check if branch is excluded (like main)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
   # For excluded branches, enforce that a branch name is prepended in square brackets
-  if ! [[ "$COMMIT_MSG" =~ $BRANCH_PREFIX_REGEX ]]; then
+  if ! [[ "$COMMIT_MSG" =~ $TICKET_ID_PREFIX_REGEX ]]; then
     echo ""
     echo "========================================"
     echo "ERROR: Missing Branch Prefix"
