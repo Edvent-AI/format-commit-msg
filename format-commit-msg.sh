@@ -5,8 +5,8 @@ set -euo pipefail
 #   0 - Success (commit proceeds)
 #   1 - Error (commit blocked)
 #
-# Automatically adds branch name and branch description to every commit message.
-# For excluded branches (like main), enforces that a branch name is prepended.
+# Automatically prepends ticket ID (e.g., [CJ1-207]) to commit messages.
+# For excluded branches (like main), enforces that a ticket ID is already present.
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
 
@@ -69,15 +69,15 @@ COMMIT_MSG=$(head -n 1 "$1")
 
 # Check if branch is excluded (like main)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
-  # For excluded branches, enforce that a branch name is prepended in square brackets
+  # For excluded branches, enforce that a ticket ID is present in square brackets
   if ! [[ "$COMMIT_MSG" =~ $TICKET_ID_PREFIX_REGEX ]]; then
     echo ""
     echo "========================================"
-    echo "ERROR: Missing Branch Prefix"
+    echo "ERROR: Missing Ticket ID"
     echo "========================================"
     echo ""
-    echo "Commits to '$BRANCH_NAME' must have a branch name"
-    echo "prepended in square brackets."
+    echo "Commits to '$BRANCH_NAME' must include a ticket ID"
+    echo "in square brackets at the start."
     echo ""
     echo "Expected format:"
     echo "  [ABC-123] Your commit message"
