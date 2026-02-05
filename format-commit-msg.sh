@@ -1,14 +1,24 @@
 #!/usr/bin/env bash
-#!'C:/Program Files/Git/bin/sh.exe'
+set -euo pipefail
+#
+# Exit codes:
+#   0 - Success (commit proceeds)
+#   1 - Error (commit blocked)
 #
 # Automatically adds branch name and branch description to every commit message.
 # For excluded branches (like main), enforces that a branch name is prepended.
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
 #
 
+# Validate commit message file argument
+if [[ -z "${1:-}" ]] || [[ ! -f "$1" ]]; then
+  echo "Error: Invalid or missing commit message file" >&2
+  exit 1
+fi
+
 # ===== SKIP MERGE COMMITS =====
 # Check if commit message starts with "Merge" (merge commits)
-if [ -f "$1" ]; then
+if [[ -f "$1" ]]; then
   FIRST_LINE=$(head -n 1 "$1")
   if [[ "$FIRST_LINE" =~ ^Merge[[:space:]] ]]; then
     exit 0
@@ -18,15 +28,22 @@ fi
 
 # This way you can customize which branches should be skipped when
 # prepending commit message.
-if [ -z "$BRANCHES_TO_SKIP" ]; then
+if [[ -z "${BRANCHES_TO_SKIP:-}" ]]; then
   BRANCHES_TO_SKIP=(master production staging main bangkok-pc)
 fi
 
 # Get branch name
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
+# ===== SKIP DETACHED HEAD =====
+# Skip if in detached HEAD state (rebase, bisect, cherry-pick, etc.)
+if [[ "$BRANCH_NAME" == "HEAD" ]]; then
+  exit 0
+fi
+# ===== END DETACHED HEAD CHECK =====
+
 # Select ticket id from branch name and capitalize it
-TICKET_ID=$(echo $BRANCH_NAME | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
+TICKET_ID=$(echo "$BRANCH_NAME" | sed -e 's:^\([^-]*-[^-]*\).*:\1:' -e \
     'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
 
 # Regex to check the valid branch name (allows numbers in first part)
@@ -39,10 +56,10 @@ BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
 
 # Whether the commit message has a TICKET_ID
-BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" $1)
+BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" "$1")
 
 # Get the first line of the commit message
-COMMIT_MSG=$(head -n 1 $1)
+COMMIT_MSG=$(head -n 1 "$1")
 
 # Check if branch is excluded (like main)
 if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
@@ -68,8 +85,12 @@ if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
   fi
 elif [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]]; then
   # Valid feature branch - auto-prepend if needed
-  if [ -n "$BRANCH_NAME" ] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
-    sed -i -e "1s:^:[$TICKET_ID] :" $1
+  if ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' -e "1s:^:[$TICKET_ID] :" "$1"
+    else
+      sed -i -e "1s:^:[$TICKET_ID] :" "$1"
+    fi
   fi
 else
   # Invalid branch name
