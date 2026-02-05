@@ -55,8 +55,12 @@ BRANCH_PREFIX_REGEX="^\[[a-zA-Z0-9]+-[a-zA-Z0-9]+\]"
 # Whether branch name should be excluded from the prepend
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$" || true)
 
-# Whether the commit message has a TICKET_ID
-BRANCH_IN_COMMIT=$(grep -c "$TICKET_ID" "$1")
+# Check if TICKET_ID is already in commit message
+if grep -q "$TICKET_ID" "$1"; then
+  HAS_TICKET_ID_IN_COMMIT_MSG=1
+else
+  HAS_TICKET_ID_IN_COMMIT_MSG=0
+fi
 
 # Get the first line of the commit message
 COMMIT_MSG=$(head -n 1 "$1")
@@ -85,7 +89,7 @@ if [[ $BRANCH_EXCLUDED -eq 1 ]]; then
   fi
 elif [[ "$BRANCH_NAME" =~ $VALID_BRANCH_REGEX ]]; then
   # Valid feature branch - auto-prepend if needed
-  if ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
+  if [[ $HAS_TICKET_ID_IN_COMMIT_MSG -eq 0 ]]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i '' -e "1s:^:[$TICKET_ID] :" "$1"
     else
