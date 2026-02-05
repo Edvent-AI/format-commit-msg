@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 #
+# Exit codes:
+#   0 - Success (commit proceeds)
+#   1 - Error (commit blocked)
+#
 # Automatically adds branch name and branch description to every commit message.
 # For excluded branches (like main), enforces that a branch name is prepended.
 # Modified from the gist here https://gist.github.com/bartoszmajsak/1396344
