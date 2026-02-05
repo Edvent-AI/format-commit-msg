@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 #
 # Automatically adds branch name and branch description to every commit message.
 # For excluded branches (like main), enforces that a branch name is prepended.
